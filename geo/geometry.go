@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/paulmach/go.geojson"
-	"github.com/ty-edelweiss/csv2geojson/log"
 )
 
 type Point []float64
@@ -18,9 +17,11 @@ func BuildPointCollection(longitude string, latitude string, columns []int, head
 	fc := geojson.NewFeatureCollection()
 
 	for _, record := range records {
+		report.ProgressTick(1.0)
+
 		coord, err := ParseCoordinate(columns, record)
 		if err != nil {
-			log.Logger.Debug(err)
+			logger.WithField("coordinate", coord).Warn(err)
 			continue
 		}
 
@@ -34,6 +35,8 @@ func BuildPointCollection(longitude string, latitude string, columns []int, head
 		fc.AddFeature(feature)
 	}
 
+	report.ProgressDone()
+
 	return fc.MarshalJSON()
 }
 
@@ -43,28 +46,33 @@ func BuildLineStringCollection(longitude string, latitude string, index int, col
 	tmp := make(map[string]LineString)
 	tmps := make(map[string]PropertyCollections)
 	for _, record := range records {
+		report.ProgressTick(0.5)
+
 		coord, err := ParseCoordinate(columns, record)
 		if err != nil {
-			log.Logger.Debug(err)
+			logger.WithField("coordinate", coord).Warn(err)
 			continue
 		}
 
 		key := record[index]
-		log.Logger.WithField("key", key).Debug("Record key value is following.")
+		logger.WithField("key", key).Debug("Record key value is following.")
 
 		properties := ParseProperties(headers, record, longitude, latitude)
 
 		tmp[key] = append(tmp[key], coord)
-		log.Logger.WithField("contents", tmp).Debug("Key data contents is following.")
+		logger.WithField("contents", tmp).Debug("Key data contents is following.")
 
 		if _, ok := tmps[key]; !ok {
 			tmps[key] = PropertyCollections{}
 		}
 		tmps[key].AppendProperties(properties)
-		log.Logger.WithField("properties", tmps).Debug("Key data properties is following.")
+		logger.WithField("properties", tmps).Debug("Key data properties is following.")
 	}
 
+	chunk := float64(len(records) / len(tmp))
 	for id, coords := range tmp {
+		report.ProgressTick(chunk)
+
 		feature := geojson.NewLineStringFeature(coords)
 
 		feature.SetProperty("hash_", ParseHash(id))
@@ -76,6 +84,8 @@ func BuildLineStringCollection(longitude string, latitude string, index int, col
 		fc.AddFeature(feature)
 	}
 
+	report.ProgressDone()
+
 	return fc.MarshalJSON()
 }
 
@@ -85,9 +95,11 @@ func BuildPolygonCollection(longitude string, latitude string, index int, column
 	tmp := make(map[string]LineString)
 	tmps := make(map[string]PropertyCollections)
 	for _, record := range records {
+		report.ProgressTick(0.5)
+
 		coord, err := ParseCoordinate(columns, record)
 		if err != nil {
-			log.Logger.Warn(err)
+			logger.WithField("coordinate", coord).Warn(err)
 			continue
 		}
 
@@ -96,20 +108,22 @@ func BuildPolygonCollection(longitude string, latitude string, index int, column
 		properties := ParseProperties(headers, record, longitude, latitude)
 
 		tmp[key] = append(tmp[key], coord)
-		log.Logger.WithField("contents", tmp).Debug("Key data contents is following.")
+		logger.WithField("contents", tmp).Debug("Key data contents is following.")
 
 		if _, ok := tmps[key]; !ok {
 			tmps[key] = PropertyCollections{}
 		}
 		tmps[key].AppendProperties(properties)
-		log.Logger.WithField("properties", tmps).Debug("Key data properties is following.")
+		logger.WithField("properties", tmps).Debug("Key data properties is following.")
 	}
 
+	chunk := float64(len(records) / len(tmp))
 	for id, coords := range tmp {
+		report.ProgressTick(chunk)
 
 		polygon, err := ParsePolygon(coords)
 		if err != nil {
-			log.Logger.Warn(err)
+			logger.WithField("key", id).Warn(err)
 			continue
 		}
 
@@ -122,7 +136,10 @@ func BuildPolygonCollection(longitude string, latitude string, index int, column
 		}
 
 		fc.AddFeature(feature)
+
 	}
+
+	report.ProgressDone()
 
 	return fc.MarshalJSON()
 }
@@ -172,7 +189,7 @@ func ParseHash(key string) []byte {
 	io.WriteString(hash, key)
 
 	buf := hash.Sum(nil)
-	log.Logger.WithField("hash", buf).Info("Convert key to hash buffer done")
+	logger.WithField("hash", string(buf)).Info("Convert key to hash buffer done")
 
 	return buf
 }

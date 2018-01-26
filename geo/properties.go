@@ -1,9 +1,5 @@
 package geo
 
-import (
-	"github.com/ty-edelweiss/csv2geojson/log"
-)
-
 type Property interface{}
 type PropertyCollection []interface{}
 
@@ -17,8 +13,8 @@ func (pcs PropertyCollections) AppendProperties(ps Properties) {
 		} else {
 			pcs[key] = append(pcs[key], property)
 		}
-		log.Logger.WithField("key", key).Debug("Appending property key is following.")
-		log.Logger.WithField("property", pcs[key]).Debug("Appending property value is following.")
+		logger.WithField("key", key).Debug("Appending property key is following.")
+		logger.WithField("property", pcs[key]).Debug("Appending property value is following.")
 	}
 }
 

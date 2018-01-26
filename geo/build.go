@@ -6,13 +6,19 @@ import (
 	"github.com/ty-edelweiss/csv2geojson/log"
 )
 
+var (
+	report = log.NewReport()
+	logger = log.AppLogger.SetName("geo")
+)
+
 func Build(geotype string, longitude string, latitude string, key string, headers []string, records [][]string) ([]byte, error) {
 	columns, err := collect(longitude, latitude, headers)
 	if err != nil {
 		return []byte{}, err
 	}
 
-	log.Logger.WithField("geotype", geotype).Info("Selected geometry type is following.")
+	report.NewProgressBar("Build GeoJSON ", len(records))
+	logger.WithField("geotype", geotype).Info("Selected geometry type is following.")
 	switch geotype {
 	case "Point":
 		return BuildPointCollection(longitude, latitude, columns, headers, records)

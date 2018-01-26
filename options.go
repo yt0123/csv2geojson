@@ -7,6 +7,7 @@ import (
 )
 
 type Options struct {
+	Jobs      int    `short:"j" long:"jobs" default:"1" description:"Set number of converter jobs"`
 	Output    string `short:"o" long:"output" description:"Set output path for converted geojson file"`
 	Type      string `short:"t" long:"type" default:"Point" description:"Set geometry type for geojson file"`
 	Key       string `short:"k" long:"key" description:"Set key column to join records"`

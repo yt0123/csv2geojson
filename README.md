@@ -1,4 +1,4 @@
-## Csv to geojeson converting tool
+## csv2geojson
 
 This application makes you possible to convert rapidly geo-data visualization. Then, You will be prompted a csv file having headers.
 
@@ -13,22 +13,24 @@ Application Options:
 &nbsp; -t, --type=      Set geometry type for geojson file (default: Point)
 
 &nbsp; -k, --key=       Set key column to join records
-  -d, --delimiter= Set csv delimiter for imported csv file (default: ,)
 
-&nbsp;&nbsp; --lon=       Set geometry coordinates for geojson file (default: longitude)
+&nbsp; -d, --delimiter= Set csv delimiter for imported csv file (default: ,)
 
-&nbsp;&nbsp; --lat=       Set geometry coordinates for geojson file (default: latitude)
+&nbsp; --lon=           Set geometry coordinates for geojson file (default: longitude)
 
-&nbsp;&nbsp; --quotes     Check csv double quotes for imported csv file
+&nbsp; --lat=           Set geometry coordinates for geojson file (default: latitude)
+
+&nbsp; --quotes         Check csv double quotes for imported csv file
 
 &nbsp; -p, --preformat  Output preformatted geojson file
+
 &nbsp; -v, --verbose    Show verbose debug information
 
 Help Options:
 
 &nbsp; -h, --help       Show this help message
 
-Supported geometry type
+**Supported Geometry Types**
 
 - Point
 - LineString

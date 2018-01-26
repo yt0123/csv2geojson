@@ -1,8 +1,9 @@
 package csv2geojson
 
 import (
-	flags "github.com/jessevdk/go-flags"
 	"os"
+
+	flags "github.com/jessevdk/go-flags"
 )
 
 type Options struct {

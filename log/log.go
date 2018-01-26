@@ -14,12 +14,16 @@ var (
 	Logger = logrus.New()
 )
 
-func Init() {
+func Init(verbose bool) {
 	formatter := new(logrus.TextFormatter)
 	formatter.FullTimestamp = true
 	formatter.QuoteEmptyFields = true
 
 	Logger.Formatter = formatter
 	Logger.Out = os.Stdout
-	Logger.SetLevel(logrus.DebugLevel)
+	if verbose {
+		Logger.SetLevel(logrus.DebugLevel)
+	} else {
+		Logger.SetLevel(logrus.WarnLevel)
+	}
 }

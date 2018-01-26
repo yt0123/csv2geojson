@@ -1,15 +1,15 @@
 package csv2geojson
 
 import (
+	"bytes"
 	"encoding/csv"
+	"encoding/json"
 	"errors"
 	"io"
 	"io/ioutil"
 	"os"
 	"unicode/utf8"
 
-	"bytes"
-	"encoding/json"
 	"github.com/ty-edelweiss/csv2geojson/geo"
 	"github.com/ty-edelweiss/csv2geojson/log"
 )
@@ -29,12 +29,14 @@ func NewConverter(inputPath string, options *Options) Converter {
 	if size != 1 {
 		panic(errors.New("Delimiter size is invalid"))
 	}
+	log.Logger.WithField("delimiter", delimiter).Info("Delimiter for csv file set the following.")
 
 	reader := csv.NewReader(fp)
 	reader.Comma = delimiter
 	reader.LazyQuotes = !options.Quotes
 
 	log.Logger.WithField("option", *options).Debug("Application options from command line.")
+
 	return Converter{reader, options}
 }
 
@@ -60,6 +62,7 @@ func (c *Converter) Do() {
 
 		index = index + 1
 	}
+	log.Logger.WithField("headers", headers).Debug("Input csv file headers is following.")
 
 	buf, err := geo.Build(c.Options.Type, c.Options.Longitude, c.Options.Latitude, c.Options.Key, headers, records)
 	if err != nil {

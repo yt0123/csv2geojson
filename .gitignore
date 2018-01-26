@@ -1,0 +1,22 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Setting files for ide
+.idea
+
+# Dependency libraries
+vendor
+
+# Binaries for command line tools
+cmd/*
+!cmd/*.go

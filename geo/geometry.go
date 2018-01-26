@@ -13,7 +13,7 @@ type Point []float64
 type LineString [][]float64
 type Polygon [][][]float64
 
-func BuildPointCollection(longitude string, latitude string, columns []int, headers []string, records [][]string) ([]byte, error) {
+func BuildPointCollection(longitude string, latitude string, columns []int, headers []string, records [][]string) *geojson.FeatureCollection {
 	fc := geojson.NewFeatureCollection()
 
 	for _, record := range records {
@@ -37,10 +37,10 @@ func BuildPointCollection(longitude string, latitude string, columns []int, head
 
 	report.ProgressDone()
 
-	return fc.MarshalJSON()
+	return fc
 }
 
-func BuildLineStringCollection(longitude string, latitude string, index int, columns []int, headers []string, records [][]string) ([]byte, error) {
+func BuildLineStringCollection(longitude string, latitude string, index int, columns []int, headers []string, records [][]string) *geojson.FeatureCollection {
 	fc := geojson.NewFeatureCollection()
 
 	tmp := make(map[string]LineString)
@@ -86,10 +86,10 @@ func BuildLineStringCollection(longitude string, latitude string, index int, col
 
 	report.ProgressDone()
 
-	return fc.MarshalJSON()
+	return fc
 }
 
-func BuildPolygonCollection(longitude string, latitude string, index int, columns []int, headers []string, records [][]string) ([]byte, error) {
+func BuildPolygonCollection(longitude string, latitude string, index int, columns []int, headers []string, records [][]string) *geojson.FeatureCollection {
 	fc := geojson.NewFeatureCollection()
 
 	tmp := make(map[string]LineString)
@@ -141,7 +141,7 @@ func BuildPolygonCollection(longitude string, latitude string, index int, column
 
 	report.ProgressDone()
 
-	return fc.MarshalJSON()
+	return fc
 }
 
 func ParseCoordinate(columns []int, record []string) (Point, error) {

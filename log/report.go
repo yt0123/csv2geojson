@@ -43,8 +43,10 @@ func (r *Report) NewProgressBar(prefix string, total int) {
 }
 
 func (r *Report) ProgressTick(chunk float64) {
-	c := math.Floor(chunk)
-	r.ProgressBar.Add(int(c))
+	c := int(math.Floor(chunk))
+	if c > 0 {
+		r.ProgressBar.Add(c)
+	}
 }
 
 func (r *Report) ProgressDone() {

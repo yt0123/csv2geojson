@@ -21,19 +21,25 @@ func Build(geotype string, longitude string, latitude string, key string, header
 	logger.WithField("geotype", geotype).Info("Selected geometry type is following.")
 	switch geotype {
 	case "Point":
-		return BuildPointCollection(longitude, latitude, columns, headers, records)
+		fc := BuildPointCollection(longitude, latitude, columns, headers, records)
+		fc.CRS = NamedCRS(4326)
+		return fc.MarshalJSON()
 	case "LineString":
 		index, err := check(key, headers)
 		if err != nil {
 			return []byte{}, err
 		}
-		return BuildLineStringCollection(longitude, latitude, index, columns, headers, records)
+		fc := BuildLineStringCollection(longitude, latitude, index, columns, headers, records)
+		fc.CRS = NamedCRS(4326)
+		return fc.MarshalJSON()
 	case "Polygon":
 		index, err := check(key, headers)
 		if err != nil {
 			return []byte{}, err
 		}
-		return BuildPolygonCollection(longitude, latitude, index, columns, headers, records)
+		fc := BuildPolygonCollection(longitude, latitude, index, columns, headers, records)
+		fc.CRS = NamedCRS(4326)
+		return fc.MarshalJSON()
 	default:
 		return []byte{}, errors.New("Geometry type is invalid")
 	}

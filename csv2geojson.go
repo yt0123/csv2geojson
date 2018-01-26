@@ -65,7 +65,7 @@ func (c *Converter) Do() {
 
 	report.FormatMessage("converting %s [ %d bytes ] :", c.FileName, int(c.BufferLength))
 
-	buf, err := geo.Build(c.Options.Type, c.Options.Longitude, c.Options.Latitude, c.Options.Key, records[0], records[1:])
+	buf, err := geo.Build(c.Options.Type, c.Options.Longitude, c.Options.Latitude, c.Options.Key, records[0], records[1:], c.Options.Limit)
 	if err != nil {
 		logger.Fatal(err)
 	}

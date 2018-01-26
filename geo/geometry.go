@@ -13,10 +13,10 @@ type Point []float64
 type LineString [][]float64
 type Polygon [][][]float64
 
-func BuildPointCollection(longitude string, latitude string, columns []int, headers []string, records [][]string) *geojson.FeatureCollection {
+func BuildPointCollection(longitude string, latitude string, columns []int, headers []string, records [][]string, limit int) *geojson.FeatureCollection {
 	fc := geojson.NewFeatureCollection()
 
-	for _, record := range records {
+	for i, record := range records {
 		report.ProgressTick(1.0)
 
 		coord, err := ParseCoordinate(columns, record)
@@ -32,6 +32,9 @@ func BuildPointCollection(longitude string, latitude string, columns []int, head
 			feature.SetProperty(key, property)
 		}
 
+		if limit != 0 && limit == i {
+			break
+		}
 		fc.AddFeature(feature)
 	}
 
@@ -40,7 +43,7 @@ func BuildPointCollection(longitude string, latitude string, columns []int, head
 	return fc
 }
 
-func BuildLineStringCollection(longitude string, latitude string, index int, columns []int, headers []string, records [][]string) *geojson.FeatureCollection {
+func BuildLineStringCollection(longitude string, latitude string, index int, columns []int, headers []string, records [][]string, limit int) *geojson.FeatureCollection {
 	fc := geojson.NewFeatureCollection()
 
 	tmp := make(map[string]LineString)
@@ -69,6 +72,7 @@ func BuildLineStringCollection(longitude string, latitude string, index int, col
 		logger.WithField("properties", tmps).Debug("Key data properties is following.")
 	}
 
+	cnt := 0
 	chunk := float64(len(records) / len(tmp))
 	for id, coords := range tmp {
 		report.ProgressTick(chunk)
@@ -81,6 +85,11 @@ func BuildLineStringCollection(longitude string, latitude string, index int, col
 			feature.SetProperty(key, pc)
 		}
 
+		if limit != 0 && limit == cnt {
+			break
+		}
+		cnt++
+
 		fc.AddFeature(feature)
 	}
 
@@ -89,7 +98,7 @@ func BuildLineStringCollection(longitude string, latitude string, index int, col
 	return fc
 }
 
-func BuildPolygonCollection(longitude string, latitude string, index int, columns []int, headers []string, records [][]string) *geojson.FeatureCollection {
+func BuildPolygonCollection(longitude string, latitude string, index int, columns []int, headers []string, records [][]string, limit int) *geojson.FeatureCollection {
 	fc := geojson.NewFeatureCollection()
 
 	tmp := make(map[string]LineString)
@@ -117,6 +126,7 @@ func BuildPolygonCollection(longitude string, latitude string, index int, column
 		logger.WithField("properties", tmps).Debug("Key data properties is following.")
 	}
 
+	cnt := 0
 	chunk := float64(len(records) / len(tmp))
 	for id, coords := range tmp {
 		report.ProgressTick(chunk)
@@ -135,8 +145,12 @@ func BuildPolygonCollection(longitude string, latitude string, index int, column
 			feature.SetProperty(key, prop)
 		}
 
-		fc.AddFeature(feature)
+		if limit != 0 && limit == cnt {
+			break
+		}
+		cnt++
 
+		fc.AddFeature(feature)
 	}
 
 	report.ProgressDone()

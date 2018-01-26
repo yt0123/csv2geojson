@@ -11,7 +11,7 @@ var (
 	logger = log.AppLogger.SetName("geo")
 )
 
-func Build(geotype string, longitude string, latitude string, key string, headers []string, records [][]string) ([]byte, error) {
+func Build(geotype string, longitude string, latitude string, key string, headers []string, records [][]string, limit int) ([]byte, error) {
 	columns, err := collect(longitude, latitude, headers)
 	if err != nil {
 		return []byte{}, err
@@ -21,7 +21,7 @@ func Build(geotype string, longitude string, latitude string, key string, header
 	logger.WithField("geotype", geotype).Info("Selected geometry type is following.")
 	switch geotype {
 	case "Point":
-		fc := BuildPointCollection(longitude, latitude, columns, headers, records)
+		fc := BuildPointCollection(longitude, latitude, columns, headers, records, limit)
 		fc.CRS = NamedCRS(4326)
 		return fc.MarshalJSON()
 	case "LineString":
@@ -29,7 +29,7 @@ func Build(geotype string, longitude string, latitude string, key string, header
 		if err != nil {
 			return []byte{}, err
 		}
-		fc := BuildLineStringCollection(longitude, latitude, index, columns, headers, records)
+		fc := BuildLineStringCollection(longitude, latitude, index, columns, headers, records, limit)
 		fc.CRS = NamedCRS(4326)
 		return fc.MarshalJSON()
 	case "Polygon":
@@ -37,7 +37,7 @@ func Build(geotype string, longitude string, latitude string, key string, header
 		if err != nil {
 			return []byte{}, err
 		}
-		fc := BuildPolygonCollection(longitude, latitude, index, columns, headers, records)
+		fc := BuildPolygonCollection(longitude, latitude, index, columns, headers, records, limit)
 		fc.CRS = NamedCRS(4326)
 		return fc.MarshalJSON()
 	default:

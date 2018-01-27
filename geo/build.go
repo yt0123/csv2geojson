@@ -17,28 +17,33 @@ func Build(geotype string, longitude string, latitude string, key string, header
 		return []byte{}, err
 	}
 
-	report.NewProgressBar("Build GeoJSON ", len(records))
 	logger.WithField("geotype", geotype).Info("Selected geometry type is following.")
 	switch geotype {
 	case "Point":
+		report.NewProgressBar("Build GeoJSON (Point) - ", len(records))
 		fc := BuildPointCollection(longitude, latitude, columns, headers, records, limit)
 		fc.CRS = NamedCRS(4326)
+		report.ProgressDone()
 		return fc.MarshalJSON()
 	case "LineString":
 		index, err := check(key, headers)
 		if err != nil {
 			return []byte{}, err
 		}
+		report.NewProgressBar("Build GeoJSON (LineString) - ", len(records))
 		fc := BuildLineStringCollection(longitude, latitude, index, columns, headers, records, limit)
 		fc.CRS = NamedCRS(4326)
+		report.ProgressDone()
 		return fc.MarshalJSON()
 	case "Polygon":
 		index, err := check(key, headers)
 		if err != nil {
 			return []byte{}, err
 		}
+		report.NewProgressBar("Build GeoJSON (Polygon) - ", len(records))
 		fc := BuildPolygonCollection(longitude, latitude, index, columns, headers, records, limit)
 		fc.CRS = NamedCRS(4326)
+		report.ProgressDone()
 		return fc.MarshalJSON()
 	default:
 		return []byte{}, errors.New("Geometry type is invalid")

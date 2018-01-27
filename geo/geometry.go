@@ -38,8 +38,6 @@ func BuildPointCollection(longitude string, latitude string, columns []int, head
 		fc.AddFeature(feature)
 	}
 
-	report.ProgressDone()
-
 	return fc
 }
 
@@ -58,22 +56,20 @@ func BuildLineStringCollection(longitude string, latitude string, index int, col
 		}
 
 		key := record[index]
-		logger.WithField("key", key).Debug("Record key value is following.")
 
 		properties := ParseProperties(headers, record, longitude, latitude)
 
 		tmp[key] = append(tmp[key], coord)
-		logger.WithField("contents", tmp).Debug("Key data contents is following.")
 
 		if _, ok := tmps[key]; !ok {
 			tmps[key] = PropertyCollections{}
 		}
 		tmps[key].AppendProperties(properties)
-		logger.WithField("properties", tmps).Debug("Key data properties is following.")
 	}
+	logger.WithField("length", len(tmp)).Debug("Features append computation order is following.")
 
 	cnt := 0
-	chunk := float64(len(records) / len(tmp))
+	chunk := report.CreateChunk(len(tmp))
 	for id, coords := range tmp {
 		report.ProgressTick(chunk)
 
@@ -92,8 +88,6 @@ func BuildLineStringCollection(longitude string, latitude string, index int, col
 
 		fc.AddFeature(feature)
 	}
-
-	report.ProgressDone()
 
 	return fc
 }
@@ -117,17 +111,16 @@ func BuildPolygonCollection(longitude string, latitude string, index int, column
 		properties := ParseProperties(headers, record, longitude, latitude)
 
 		tmp[key] = append(tmp[key], coord)
-		logger.WithField("contents", tmp).Debug("Key data contents is following.")
 
 		if _, ok := tmps[key]; !ok {
 			tmps[key] = PropertyCollections{}
 		}
 		tmps[key].AppendProperties(properties)
-		logger.WithField("properties", tmps).Debug("Key data properties is following.")
 	}
+	logger.WithField("length", len(tmp)).Debug("Features append computation order is following.")
 
 	cnt := 0
-	chunk := float64(len(records) / len(tmp))
+	chunk := report.CreateChunk(len(tmp))
 	for id, coords := range tmp {
 		report.ProgressTick(chunk)
 
@@ -152,8 +145,6 @@ func BuildPolygonCollection(longitude string, latitude string, index int, column
 
 		fc.AddFeature(feature)
 	}
-
-	report.ProgressDone()
 
 	return fc
 }

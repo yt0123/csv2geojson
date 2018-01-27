@@ -70,7 +70,7 @@ func Init(out *os.File, name string, verbose bool) {
 	if verbose {
 		AppLogger.SetLevel(logrus.DebugLevel)
 	} else {
-		AppLogger.SetLevel(logrus.WarnLevel)
+		AppLogger.SetLevel(logrus.InfoLevel)
 	}
 }
 
@@ -83,7 +83,7 @@ func (l *Logger) SetVerbose(verbose bool) *Logger {
 	if verbose {
 		AppLogger.SetLevel(logrus.DebugLevel)
 	} else {
-		AppLogger.SetLevel(logrus.WarnLevel)
+		AppLogger.SetLevel(logrus.InfoLevel)
 	}
 	return l
 }

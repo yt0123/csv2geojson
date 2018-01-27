@@ -67,6 +67,7 @@ func (c *Converter) Do() {
 
 	buf, err := geo.Build(c.Options.Type, c.Options.Longitude, c.Options.Latitude, c.Options.Key, records[0], records[1:], c.Options.Limit)
 	if err != nil {
+		report.ErrorMessage(err)
 		logger.Fatal(err)
 	}
 	logger.WithField("data", string(buf)).Debug("Geojson conversion done. and result is following.")
